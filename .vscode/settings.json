@@ -1,0 +1,28 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": false,
+  "editor.tabSize": 2,
+  "editor.wordWrapColumn": 80,
+  "eslint.workingDirectories": [
+    "./server"
+  ],
+  "files.insertFinalNewline": true,
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+  "javascript.preferences.quoteStyle": "single",
+  "prettier.arrowParens": "avoid",
+  "prettier.printWidth": 80,
+  "prettier.quoteProps": "consistent",
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "none",
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.preferences.quoteStyle": "single",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

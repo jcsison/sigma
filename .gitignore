@@ -1,0 +1,6 @@
+characters/*
+dist/
+lib/external
+node_modules/
+
+.env
