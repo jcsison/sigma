@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Request, Response } from 'express';
 
 import { Log, g } from '../../lib/utils/helpers/index.js';
+import { textToSpeech } from '../../lib/speech/textToSpeech.js';
 
 interface ChatData {
   userInput: string;
@@ -105,11 +106,16 @@ export const chat = async (req: Request, res: Response) => {
       return;
     }
 
-    Log.info(`Chat output: ${chatData.results[0]?.history.visible[0]?.[1]}`);
+    const chatOutput = chatData.results[0]?.history.visible[0]?.[1];
+
+    Log.info(`Chat output: ${chatOutput}`);
 
     // TODO: implement speech sdk
+    if (chatOutput) {
+      await textToSpeech(chatOutput);
+    }
 
-    res.status(200).send(chatData.results[0]?.history.visible[0]?.[1]);
+    res.status(200).send(chatOutput);
   } catch (e) {
     Log.error(e, 'Error fetching chat data');
     res.sendStatus(500);
