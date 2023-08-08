@@ -12,13 +12,17 @@
     "build:watch": "tsc -w -p .",
     "clean": "rimraf ./dist",
     "init": "npm install && npm run-script build",
-    "start": "node --experimental-modules --experimental-specifier-resolution=node --max_old_space_size=460 --no-warnings --optimize_for_size dist/src/index.js | pino-pretty"
+    "postinstall": "patch-package",
+    "start": "node --experimental-modules --experimental-specifier-resolution=node --max_old_space_size=460 --no-warnings --optimize_for_size dist/src/index.js | pino-pretty",
+    "whisper-fetch-model": "npx whisper-node download base.en"
   },
   "dependencies": {
     "axios": "^1.4.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "microsoft-cognitiveservices-speech-sdk": "^1.30.1",
+    "patch-package": "^8.0.0",
     "pino": "^8.14.2",
     "pino-pretty": "^10.2.0",
     "play-sound": "^1.1.5",
@@ -26,6 +30,7 @@
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/play-sound": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^6.2.1",

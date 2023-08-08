@@ -1,8 +1,5 @@
-import * as dotenv from 'dotenv';
-
+import './env.js';
 import { launchAPI } from './api/launchAPI.js';
-
-dotenv.config();
 
 const start = () => {
   launchAPI();

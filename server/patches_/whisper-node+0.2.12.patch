@@ -1,0 +1,43 @@
+diff --git a/node_modules/whisper-node/dist/download.js b/node_modules/whisper-node/dist/download.js
+index db6f495..6c2cb95 100755
+--- a/node_modules/whisper-node/dist/download.js
++++ b/node_modules/whisper-node/dist/download.js
+@@ -32,6 +32,12 @@ const MODELS_LIST = [
+     "large"
+ ];
+ const askModel = () => __awaiter(void 0, void 0, void 0, function* () {
++    if (process.argv[3]) {
++        const arg = process.argv[3];
++        if (MODELS_LIST.includes(arg)) {
++            return arg;
++        }
++    }
+     const answer = yield readline_sync_1.default.question(`\n[whisper-node] Enter model name (e.g. 'base.en') or 'cancel' to exit\n(ENTER for base.en): `);
+     if (answer === "cancel") {
+         console.log("[whisper-node] Exiting model downloader. Run again with: 'npx whisper-node download'");
+diff --git a/node_modules/whisper-node/lib/whisper.cpp/ggml.o b/node_modules/whisper-node/lib/whisper.cpp/ggml.o
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/whisper-node/lib/whisper.cpp/main b/node_modules/whisper-node/lib/whisper.cpp/main
+new file mode 100755
+index 0000000..e69de29
+diff --git a/node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh b/node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh
+index 7075080..6fda18e 100755
+--- a/node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh
++++ b/node_modules/whisper-node/lib/whisper.cpp/models/download-ggml-model.sh
+@@ -6,7 +6,7 @@
+ #src="https://ggml.ggerganov.com"
+ #pfx="ggml-model-whisper"
+ 
+-src="https://huggingface.co/datasets/ggerganov/whisper.cpp"
++src="https://huggingface.co/ggerganov/whisper.cpp"
+ pfx="resolve/main/ggml"
+ 
+ # get the path of this script
+diff --git a/node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin b/node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin
+new file mode 100644
+index 0000000..d12531e
+Binary files /dev/null and b/node_modules/whisper-node/lib/whisper.cpp/models/ggml-base.en.bin differ
+diff --git a/node_modules/whisper-node/lib/whisper.cpp/whisper.o b/node_modules/whisper-node/lib/whisper.cpp/whisper.o
+new file mode 100644
+index 0000000..e69de29

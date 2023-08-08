@@ -13,8 +13,8 @@ const speechPath = 'src/lib/speech/';
 export const textToSpeech = async (text: string) => {
   currentPlayer?.kill();
 
-  const speechKey = g.validate(process.env.SPEECH_KEY, g.string);
-  const speechRegion = g.validate(process.env.SPEECH_REGION, g.string);
+  const speechKey = g.validate(process.env.AZURE_SPEECH_KEY, g.string);
+  const speechRegion = g.validate(process.env.AZURE_SPEECH_REGION, g.string);
 
   if (!speechKey || !speechRegion) {
     throw new Error('Invalid speech config');
@@ -32,7 +32,10 @@ export const textToSpeech = async (text: string) => {
     audioConfig
   );
 
-  const ssml = xmlToString(speechPath + 'ssml.xml').replace('text_input', text);
+  const ssml = xmlToString(speechPath + 'ssml.xml').replace(
+    'text_input',
+    text.replace('<', '&lt;').replace('>', '&gt;')
+  );
 
   speechConfig.speechSynthesisVoiceName = 'en-US-AshleyNeural';
 

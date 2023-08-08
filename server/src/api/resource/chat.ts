@@ -1,33 +1,17 @@
 import axios from 'axios';
 import { Request, Response } from 'express';
 
+import {
+  ChatData,
+  TextGenerationChatData,
+  TextGenerationResponseData,
+  TextGenerationUserData
+} from '../../lib/types/chat.js';
+import { History } from '../../lib/history/index.js';
 import { Log, g } from '../../lib/utils/helpers/index.js';
 import { textToSpeech } from '../../lib/speech/textToSpeech.js';
 
-interface ChatData {
-  userInput: string;
-}
-
-interface TextGenerationUserData {
-  character: string;
-  max_new_tokens: number;
-  mode: string;
-  user_input: string;
-  your_name: string;
-}
-
-interface TextGenerationHistory {
-  internal: string[][];
-  visible: string[][];
-}
-
-interface TextGenerationResults {
-  history: TextGenerationHistory;
-}
-
-interface TextGenerationChatData {
-  results: TextGenerationResults[];
-}
+const history = new History();
 
 export const chat = async (req: Request, res: Response) => {
   const userInput = g.validate<ChatData>(
@@ -72,6 +56,7 @@ export const chat = async (req: Request, res: Response) => {
 
   const textGenerationUserData: TextGenerationUserData = {
     character: characterName,
+    history: history.data,
     max_new_tokens: 250,
     mode: 'chat',
     user_input: userInput,
@@ -106,16 +91,26 @@ export const chat = async (req: Request, res: Response) => {
       return;
     }
 
-    const chatOutput = chatData.results[0]?.history.visible[0]?.[1];
+    const chatHistory = chatData.results[0]?.history;
+    const chatOutput =
+      chatHistory?.visible[chatHistory.visible.length - 1]?.[1];
 
     Log.info(`Chat output: ${chatOutput}`);
 
-    // TODO: implement speech sdk
-    if (chatOutput) {
-      await textToSpeech(chatOutput);
+    if (!chatOutput) {
+      res.status(500);
+      return;
     }
 
-    res.status(200).send(chatOutput);
+    history.data = chatHistory;
+    await textToSpeech(chatOutput);
+
+    const textGenerationResponseData: TextGenerationResponseData = {
+      history: chatHistory.visible,
+      response: chatOutput
+    };
+
+    res.status(200).send(textGenerationResponseData);
   } catch (e) {
     Log.error(e, 'Error fetching chat data');
     res.sendStatus(500);

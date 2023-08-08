@@ -1,7 +1,8 @@
 import express from 'express';
+import cors from 'cors';
 
 import { Log } from '../lib/utils/helpers/index.js';
-import { chat, empty } from './resource/index.js';
+import { chat, empty, speech } from './resource/index.js';
 
 const port = process.env.PORT ?? 3000;
 
@@ -11,9 +12,12 @@ export const router = express.Router();
 const loadRoutes = () => {
   router.get('/', empty);
   router.post('/chat', chat);
+  router.post('/speech', speech);
 };
 
 export const launchAPI = () => {
+  app.use(cors());
+
   loadRoutes();
 
   app.use(express.json());
