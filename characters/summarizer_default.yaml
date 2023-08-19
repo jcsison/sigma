@@ -1,0 +1,4 @@
+name: _
+greeting: |-
+context: |-
+  You will only generate a summary of the current conversation between the user and their AI companion.

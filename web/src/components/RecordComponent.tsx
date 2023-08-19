@@ -3,12 +3,23 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import axios from "axios";
 import createSpeechServicesPolyfill from "web-speech-cognitive-services";
-import { useEffect, useState } from "react";
+import {
+  Fragment,
+  type ChangeEvent,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useMutation } from "react-query";
 
 import { Log } from "~/lib/utils/helpers";
 import { env } from "~/env.mjs";
-import { type TextGenerationResponseData } from "~/lib/types/sigmaAPI.js";
+import {
+  type ChatData,
+  type TextGenerationResponseData,
+} from "~/lib/types/sigmaAPI.js";
 
 const { SpeechRecognition: AzureSpeechRecognition } =
   createSpeechServicesPolyfill({
@@ -19,6 +30,17 @@ const { SpeechRecognition: AzureSpeechRecognition } =
   });
 
 SpeechRecognition.applyPolyfill(AzureSpeechRecognition);
+
+const updateHistory = (
+  prevHistory: string[][] | undefined,
+  newHistory: string[][]
+) => {
+  if (!prevHistory) {
+    return [newHistory[newHistory.length - 1] ?? []];
+  }
+
+  return [...prevHistory, [...(newHistory[newHistory.length - 1] ?? [])]];
+};
 
 const sendPrompt = async (prompt: string) => {
   const data = await axios.post<TextGenerationResponseData>(
@@ -36,40 +58,106 @@ export const RecordComponent = () => {
     browserSupportsSpeechRecognition,
     finalTranscript,
     isMicrophoneAvailable,
-    listening,
     resetTranscript,
     transcript,
   } = useSpeechRecognition();
 
-  const [responseData, setResponseData] =
-    useState<TextGenerationResponseData>();
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const { mutate: sendPromptMutate } = useMutation({
+  const [history, setHistory] = useState<string[][]>();
+  const [activeListen, setActiveListen] = useState(false);
+  const [speechInput, setSpeechInput] = useState<string>();
+  const [textInput, setTextInput] = useState("");
+
+  const {
+    isError: sendPromptError,
+    isLoading: sendPromptLoading,
+    mutate: sendPromptMutate,
+  } = useMutation({
     mutationFn: sendPrompt,
-    onSuccess: (data) => {
-      setResponseData(data);
+    onSuccess: async (data) => {
+      setSpeechInput(undefined);
+      setHistory((prev) => updateHistory(prev, data.history));
+      // await axios.post<ChatData>(env.NEXT_PUBLIC_SERVER_API_URL + "/speech", {
+      //   userInput: data.response,
+      // });
+      await Promise.resolve<ChatData>({ userInput: data.response });
+      startListening();
     },
   });
 
   Log.info(transcript);
 
-  const startListening = () => {
-    SpeechRecognition.startListening({
-      language: "en-US",
-    }).catch(Log.error);
+  const resetHistory = () => {
+    setHistory(undefined);
   };
 
-  const stopListening = () => {
-    SpeechRecognition.stopListening().catch(Log.error);
+  const scrollToEnd = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  };
+
+  const startListening = (start?: boolean) => {
+    if (start ?? activeListen) {
+      SpeechRecognition.startListening({
+        language: "en-US",
+      }).catch(Log.error);
+    }
+  };
+
+  const stopListening = useCallback(() => {
+    SpeechRecognition.abortListening().catch(Log.error);
+    resetTranscript();
+  }, [resetTranscript]);
+
+  const startActiveListen = () => {
+    setActiveListen(true);
+    startListening(true);
+  };
+
+  const stopActiveListen = () => {
+    setActiveListen(false);
+    stopListening();
+  };
+
+  const handleTextInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setTextInput(e.target.value);
+  };
+
+  const handleSendTextInput = () => {
+    if (textInput) {
+      sendPromptMutate(textInput);
+      setSpeechInput(textInput);
+      setTextInput("");
+    }
+  };
+
+  const handleTextInputEnter = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendTextInput();
+    }
   };
 
   useEffect(() => {
-    if (finalTranscript !== "") {
+    scrollToEnd();
+  }, [history, speechInput]);
+
+  useEffect(() => {
+    if (finalTranscript !== "" && !sendPromptLoading) {
+      stopListening();
       sendPromptMutate(finalTranscript);
+      setSpeechInput(finalTranscript);
       resetTranscript();
       SpeechRecognition.stopListening().catch(Log.error);
     }
-  }, [finalTranscript, resetTranscript, sendPromptMutate]);
+  }, [
+    finalTranscript,
+    resetTranscript,
+    sendPromptLoading,
+    sendPromptMutate,
+    stopListening,
+  ]);
 
   if (!browserSupportsSpeechRecognition || !isMicrophoneAvailable) {
     return null;
@@ -77,52 +165,104 @@ export const RecordComponent = () => {
 
   return (
     <main className="flex h-screen items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-      <div className="container flex h-screen flex-col items-center justify-center gap-8 px-4 py-12 ">
-        <div className="mx-10 flex w-6/12 flex-1 flex-col justify-end overflow-y-auto rounded-xl bg-white/40 px-4 py-2 shadow-lg">
-          {responseData?.history.map((h1) =>
-            h1.map((h2, j) => {
-              if (j % 2 === 0) {
-                return (
-                  <div className="w-full" key={j}>
-                    <div className="my-2 inline-block max-w-sm rounded-xl bg-blue-900/80 px-2 py-2 shadow-lg">
+      <div className="container flex h-screen flex-col items-center justify-center gap-8 px-8 py-12">
+        <div
+          className="flex w-full max-w-lg flex-1 flex-col justify-end overflow-y-auto rounded-xl bg-gray-100/40 px-6 py-6 shadow-md"
+          ref={scrollRef}
+        >
+          <div className="max-h-full">
+            {history?.map((chat, i) => (
+              <Fragment key={i}>
+                {chat[0] && (
+                  <div className="w-full">
+                    <div className="mb-4 inline-block max-w-sm rounded-xl bg-blue-900/60 px-2 pb-2 pt-1 shadow-sm">
                       <p className="text-1xl py-1 font-semibold text-white">
-                        {h2}
+                        {chat[0]}
                       </p>
                     </div>
                   </div>
-                );
-              }
+                )}
 
-              return (
-                <div className="flex w-full justify-end" key={j}>
-                  <div className="my-2 inline-block max-w-sm rounded-xl bg-sky-900/80 px-2 py-2 shadow-lg">
-                    <p className="text-1xl py-1 font-semibold text-white">
-                      {h2}
-                    </p>
+                {chat[1] && (
+                  <div className="flex w-full justify-end">
+                    <div className="mb-4 inline-block max-w-sm rounded-xl bg-sky-800/60 px-2 pb-2 pt-1 shadow-sm">
+                      <p className="text-1xl inline-block py-1 font-semibold text-white">
+                        {chat[1]}
+                      </p>
+                    </div>
                   </div>
+                )}
+              </Fragment>
+            ))}
+
+            {speechInput && (
+              <div className="w-full">
+                <div className="mb-4 inline-block max-w-sm rounded-xl bg-blue-900/60 px-2 pb-2 pt-1 shadow-sm">
+                  <p className="text-1xl py-1 font-semibold text-white">
+                    {speechInput}
+                  </p>
                 </div>
-              );
-            })
-          )}
+              </div>
+            )}
+
+            {speechInput && (
+              <div className="flex w-full justify-end">
+                <div className="mb-4 inline-block max-w-sm rounded-xl bg-sky-800/60 px-2 pb-2 pt-1 shadow-sm">
+                  <p className="text-1xl inline-block py-1 font-semibold text-white">
+                    {sendPromptError ? "Error sending message!" : "..."}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <button
-            className={`flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white shadow-lg hover:bg-white/20 ${
-              listening ? "bg-pink-600/80" : ""
+            className={`flex max-w-xs flex-col gap-4 rounded-xl px-4 pb-2 pt-1 text-white shadow-lg ${
+              activeListen
+                ? "bg-pink-600/80 hover:bg-pink-600/40"
+                : "bg-white/10 hover:bg-white/20"
             }`}
-            onClick={startListening}
+            onClick={startActiveListen}
           >
-            <h3 className="text-2xl font-semibold drop-shadow-sm">Start</h3>
+            <h3 className="text-1xl font-semibold drop-shadow-sm">Start</h3>
           </button>
 
           <button
-            className={`flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white shadow-lg hover:bg-white/20 ${
-              !listening ? "bg-pink-600/80" : ""
+            className={`flex max-w-xs flex-col gap-4 rounded-xl px-4 pb-2 pt-1 text-white shadow-lg ${
+              !activeListen
+                ? "bg-pink-600/80 hover:bg-pink-600/40"
+                : "bg-white/10 hover:bg-white/20"
             }`}
-            onClick={stopListening}
+            onClick={stopActiveListen}
           >
-            <h3 className="text-2xl font-semibold drop-shadow-sm">Stop</h3>
+            <h3 className="text-1xl font-semibold drop-shadow-sm">Stop</h3>
+          </button>
+
+          <button
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 px-4 pb-2 pt-1 text-white shadow-lg hover:bg-white/20"
+            onClick={resetHistory}
+          >
+            <h3 className="text-1xl font-semibold drop-shadow-sm">Reset</h3>
+          </button>
+        </div>
+
+        <div className="flex">
+          <input
+            className="grow bg-white/50 px-2 text-sm font-semibold shadow-lg"
+            onChange={handleTextInput}
+            onKeyDown={handleTextInputEnter}
+            value={textInput}
+          />
+
+          <button
+            className="ml-4 max-w-xs bg-white/10 px-4 pb-2 pt-1 text-white shadow-lg hover:bg-white/20"
+            onClick={handleSendTextInput}
+          >
+            <h3 className="text-1xl font-semibold text-white drop-shadow-sm">
+              Send
+            </h3>
           </button>
         </div>
       </div>

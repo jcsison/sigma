@@ -6,7 +6,12 @@ const error = (error: unknown, message?: string) => {
 
 const info = (info: unknown, message?: string) => {
   if (info) {
-    console.log(info, message);
+    if (message) {
+      console.log(info, message);
+      return;
+    }
+
+    console.log(info);
   }
 };
 

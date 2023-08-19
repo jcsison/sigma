@@ -31,14 +31,11 @@ if ! [ -d ${TEXT_GENERATION_WEBUI_PATH} ]; then
   (cd ${EXTERNAL_LIB_PATH} && git clone https://github.com/oobabooga/text-generation-webui.git)
 fi
 
-# Link character files into `text-generation-webui`
-for file in ${PROJECT_PATH}/characters/*; do
-  fileName=$(pathToFileName $file)
-
-  if ! [ -f ${TEXT_GENERATION_WEBUI_PATH}/characters/${fileName} ]; then
-    ln -s ${file} ${TEXT_GENERATION_WEBUI_PATH}/characters/${fileName}
-  fi
-done
+if ! [ -L ${TEXT_GENERATION_WEBUI_PATH}/characters ]; then
+  mv ${TEXT_GENERATION_WEBUI_PATH}/characters ${TEXT_GENERATION_WEBUI_PATH}/characters_old
+  ln -s ${TEXT_GENERATION_WEBUI_PATH}/characters_old/instruction-following ${PROJECT_PATH}/characters/instruction-following
+  ln -s ${PROJECT_PATH}/characters ${TEXT_GENERATION_WEBUI_PATH}/characters
+fi
 
 cd ${TEXT_GENERATION_WEBUI_PATH}
 

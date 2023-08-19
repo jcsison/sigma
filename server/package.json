@@ -7,7 +7,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --experimental-modules --loader ts-node/esm --max_old_space_size=460 --no-warnings --optimize_for_size src/index.ts | pino-pretty",
+    "dev": "node --experimental-modules --loader ts-node/esm --max_old_space_size=460 --no-warnings --optimize_for_size --watch src/index.ts | pino-pretty",
     "build": "rimraf ./dist && tsc -p .",
     "build:watch": "tsc -w -p .",
     "clean": "rimraf ./dist",

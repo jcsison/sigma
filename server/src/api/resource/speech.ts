@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import { ChatData } from '../../lib/types/chat.js';
+import { ChatData } from '../../lib/types/index.js';
 import { Log, g } from '../../lib/utils/helpers/index.js';
-import { textToSpeech } from '../../lib/speech/textToSpeech.js';
+import { textToSpeech } from '../../speech/index.js';
 
 export const speech = async (req: Request, res: Response) => {
   const userInput = g.validate<ChatData>(
@@ -17,8 +17,6 @@ export const speech = async (req: Request, res: Response) => {
   }
 
   await textToSpeech(userInput);
-
-  Log.info(`User input: ${userInput}`);
 
   res.status(200).send(userInput);
 };

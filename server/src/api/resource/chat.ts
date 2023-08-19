@@ -1,15 +1,9 @@
-import axios from 'axios';
 import { Request, Response } from 'express';
 
-import {
-  ChatData,
-  TextGenerationChatData,
-  TextGenerationResponseData,
-  TextGenerationUserData
-} from '../../lib/types/chat.js';
-import { History } from '../../lib/history/index.js';
+import { ChatData, TextGenerationResponseData } from '../../lib/types/index.js';
+import { History } from '../../history/index.js';
 import { Log, g } from '../../lib/utils/helpers/index.js';
-import { textToSpeech } from '../../lib/speech/textToSpeech.js';
+import { queryLLM } from '../../llm/index.js';
 
 const history = new History();
 
@@ -27,83 +21,26 @@ export const chat = async (req: Request, res: Response) => {
 
   Log.info(`User input: ${userInput}`);
 
-  const textGenerationAPIHost = g.validate(
-    process.env.TEXT_GENERATION_API_HOST,
-    g.string
-  );
-
-  if (!textGenerationAPIHost) {
-    Log.error('Missing `text-generation-webui` API Host');
-    res.sendStatus(500);
+  if (userInput === '/reset') {
+    history.resetHistory();
+    res.status(200).send({ history: [], response: '' });
     return;
   }
-
-  const characterName = g.validate(process.env.CHARACTER_NAME, g.string);
-
-  if (!characterName) {
-    Log.error('Missing character name');
-    res.sendStatus(500);
-    return;
-  }
-
-  const userName = g.validate(process.env.USER_NAME, g.string);
-
-  if (!userName) {
-    Log.error('Missing user name');
-    res.sendStatus(500);
-    return;
-  }
-
-  const textGenerationUserData: TextGenerationUserData = {
-    character: characterName,
-    history: history.data,
-    max_new_tokens: 250,
-    mode: 'chat',
-    user_input: userInput,
-    your_name: userName
-  };
 
   try {
-    const textGenerationResponse = await axios.post(
-      `${textGenerationAPIHost}/v1/chat`,
-      textGenerationUserData
-    );
+    const { chatHistory, chatOutput } = await queryLLM({
+      history: history.data,
+      prompt: userInput
+    });
 
-    const chatData = g.validate<TextGenerationChatData>(
-      textGenerationResponse.data,
-      g.object([
-        'results',
-        g.array(
-          g.object([
-            'history',
-            g.object(
-              ['internal', g.array(g.array(g.string))],
-              ['visible', g.array(g.array(g.string))]
-            )
-          ])
-        )
-      ])
-    );
-
-    if (!chatData) {
-      Log.error('Error parsing chat data');
-      res.sendStatus(500);
-      return;
-    }
-
-    const chatHistory = chatData.results[0]?.history;
-    const chatOutput =
-      chatHistory?.visible[chatHistory.visible.length - 1]?.[1];
-
-    Log.info(`Chat output: ${chatOutput}`);
-
-    if (!chatOutput) {
+    if (!chatHistory || !chatOutput) {
       res.status(500);
       return;
     }
 
-    history.data = chatHistory;
-    await textToSpeech(chatOutput);
+    Log.info(`Bot output: ${chatOutput}`);
+
+    history.updateHistory(chatHistory).catch(Log.error);
 
     const textGenerationResponseData: TextGenerationResponseData = {
       history: chatHistory.visible,
