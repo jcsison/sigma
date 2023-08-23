@@ -1,1 +1,1 @@
-export * from './textToSpeech.js';
+export * from './textToSpeech';

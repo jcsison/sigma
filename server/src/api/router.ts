@@ -2,7 +2,7 @@ import cors from 'cors';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { z } from 'zod';
 
-import { Log, g } from '../lib/utils/helpers/index.js';
+import { Log, g } from 'root/lib/helpers';
 import { chat, empty, speech } from './resource/index.js';
 import { publicProcedure, router } from './trpc.js';
 
@@ -15,14 +15,14 @@ const appRouter = router({
     .mutation(({ input }) => chat(input)),
   speech: publicProcedure
     .input(z.object({ userInput: z.string() }))
-    .query(({ input }) => speech(input))
+    .query(({ input }) => speech(input)),
 });
 
 export type AppRouter = typeof appRouter;
 
 const server = createHTTPServer({
   middleware: cors(),
-  router: appRouter
+  router: appRouter,
 });
 
 export const launchAPI = () => {

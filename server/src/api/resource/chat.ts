@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server';
 
-import { ChatData, TextGenerationResponseData } from '../../lib/types/index.js';
-import { History } from '../../history/index.js';
-import { Log } from '../../lib/utils/helpers/index.js';
-import { queryLLM } from '../../llm/index.js';
+import type { ChatData, TextGenerationResponseData } from 'root/lib/types';
+import { History } from '~/history';
+import { Log } from 'root/lib/helpers';
+import { queryLLM } from '~/llm';
 
 const history = new History();
 
@@ -21,13 +21,13 @@ export const chat = async ({ userInput }: ChatData) => {
 
   const { chatHistory, chatOutput } = await queryLLM({
     history: history.data,
-    prompt: userInput
+    prompt: userInput,
   });
 
   if (!chatHistory || !chatOutput) {
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'Error fetching response from LLM'
+      message: 'Error fetching response from LLM',
     });
   }
 
@@ -37,7 +37,7 @@ export const chat = async ({ userInput }: ChatData) => {
 
   const textGenerationResponseData: TextGenerationResponseData = {
     history: chatHistory.visible,
-    response: chatOutput
+    response: chatOutput,
   };
 
   return textGenerationResponseData;

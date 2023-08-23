@@ -1,6 +1,6 @@
-import { Log } from '../lib/utils/helpers/index.js';
-import { TextGenerationHistory } from '../lib/types/chat.js';
-import { queryLLM } from '../llm/index.js';
+import type { TextGenerationHistory } from 'root/lib/types';
+import { Log } from 'root/lib/helpers';
+import { queryLLM } from '../llm';
 
 export const summarizeHistory = async (history: TextGenerationHistory) => {
   const summarizePrompt = `Create a summary of the current conversation between us.`;
@@ -10,7 +10,7 @@ export const summarizeHistory = async (history: TextGenerationHistory) => {
       characterName: 'summarizer_default',
       history,
       maxTokens: 250,
-      prompt: summarizePrompt
+      prompt: summarizePrompt,
     });
 
     Log.info('Chat summary: ' + chatOutput);

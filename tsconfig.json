@@ -13,24 +13,11 @@
     "moduleResolution": "node",
     "noEmit": true,
     "noUncheckedIndexedAccess": true,
-    "paths": {
-      "root/*": ["../*"],
-      "server/*": ["../server/src/*"],
-      "~/*": ["./src/*"]
-    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "es2017"
   },
-  "include": [
-    "**/*.cjs",
-    "**/*.mjs",
-    "**/*.ts",
-    "**/*.tsx",
-    "../*",
-    "../server/src/**/*",
-    "next-env.d.ts"
-  ],
+  "include": ["**/*.cjs", "**/*.mjs", "**/*.ts"],
   "exclude": ["node_modules"]
 }

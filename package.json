@@ -1,0 +1,33 @@
+{
+  "name": "sigma",
+  "version": "0.0.1",
+  "author": "jcsison",
+  "description": "",
+  "license": "ISC",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "microsoft-cognitiveservices-speech-sdk": "^1.31.0",
+    "patch-package": "^8.0.0",
+    "pino": "^8.14.2",
+    "pino-pretty": "^10.2.0",
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "@types/prettier": "^2.7.2",
+    "eslint": "^8.46.0",
+    "eslint-config-next": "^13.4.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
+    "prettier-plugin-tailwindcss": "^0.5.3",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.6"
+  },
+  "workspaces": [
+    "server",
+    "web"
+  ]
+}

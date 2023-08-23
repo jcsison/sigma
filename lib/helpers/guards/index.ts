@@ -11,11 +11,11 @@ import {
   propertiesGuard,
   recordGuard,
   stringGuard
-} from './guards.js';
-import { validateData } from './helpers.js';
+} from './guards';
+import { validateData } from './helpers';
 
-export * from './guards.js';
-export * from './helpers.js';
+export * from './guards';
+export * from './helpers';
 
 export const g = {
   array: arrayGuard,

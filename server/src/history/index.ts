@@ -1,2 +1,2 @@
-export * from './history.js';
-export * from './summarizeHistory.js';
+export * from './history';
+export * from './summarizeHistory';

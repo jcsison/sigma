@@ -1,8 +1,8 @@
 import player from 'play-sound';
 import sdk from 'microsoft-cognitiveservices-speech-sdk';
 
-import { g } from '../lib/utils/helpers/index.js';
-import { xmlToString } from './helper.js';
+import { g } from 'root/lib/helpers';
+import { xmlToString } from './helper';
 
 const audioPlayer = player({ player: 'mplayer' });
 
@@ -17,20 +17,20 @@ export const textToSpeech = async (text: string) => {
   }
 
   const audioConfig = sdk.AudioConfig.fromAudioFileOutput(
-    speechPath + 'output.wav'
+    speechPath + 'output.wav',
   );
   const speechConfig = sdk.SpeechConfig.fromSubscription(
     speechKey,
-    speechRegion
+    speechRegion,
   );
   const speechSynthesizer = new sdk.SpeechSynthesizer(
     speechConfig,
-    audioConfig
+    audioConfig,
   );
 
   const ssml = xmlToString(speechPath + 'ssml.xml').replace(
     'text_input',
-    text.replace('<', '&lt;').replace('>', '&gt;')
+    text.replace('<', '&lt;').replace('>', '&gt;'),
   );
 
   speechConfig.speechSynthesisVoiceName = 'en-US-AshleyNeural';
@@ -38,7 +38,7 @@ export const textToSpeech = async (text: string) => {
   await new Promise<sdk.SpeechSynthesisResult>((resolve, reject) => {
     speechSynthesizer.speakSsmlAsync(
       ssml,
-      result => {
+      (result) => {
         if (result.errorDetails) {
           reject(result.errorDetails);
         }
@@ -46,10 +46,10 @@ export const textToSpeech = async (text: string) => {
         speechSynthesizer.close();
         resolve(result);
       },
-      e => {
+      (e) => {
         speechSynthesizer.close();
         reject(e);
-      }
+      },
     );
   });
 
@@ -57,13 +57,13 @@ export const textToSpeech = async (text: string) => {
     audioPlayer.play(
       speechPath + 'output.wav',
       { mplayer: ['-ao', 'pulse'] },
-      e => {
+      (e) => {
         if (e) {
           reject(e);
         }
 
         resolve(undefined);
-      }
+      },
     );
   });
 };

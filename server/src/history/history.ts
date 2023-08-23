@@ -1,6 +1,6 @@
-import { TextGenerationHistory } from '../lib/types/chat.js';
-import { Log } from '../lib/utils/helpers/logging.js';
-import { summarizeHistory } from './summarizeHistory.js';
+import type { TextGenerationHistory } from 'root/lib/types';
+import { Log } from 'root/lib/helpers';
+import { summarizeHistory } from './summarizeHistory';
 
 export class History {
   private history: TextGenerationHistory | undefined;
@@ -22,23 +22,26 @@ export class History {
     if (
       this.history &&
       this.history.internal
-        .map(messages => messages[1]?.slice(0, 30))
+        .map((messages) => messages[1]?.slice(0, 30))
         .includes(
           newHistory.internal[newHistory.internal.length - 1]?.[1]?.slice(
             0,
-            30
-          ) ?? '/|/|/|'
+            30,
+          ) ?? '/|/|/|',
         )
     ) {
       Log.info(
         JSON.stringify([
-          newHistory.internal[newHistory.internal.length - 1]?.[1]?.slice(0, 30)
-        ])
+          newHistory.internal[newHistory.internal.length - 1]?.[1]?.slice(
+            0,
+            30,
+          ),
+        ]),
       );
       Log.info(
         JSON.stringify(
-          this.history.internal.map(messages => messages[1]?.slice(0, 30))
-        )
+          this.history.internal.map((messages) => messages[1]?.slice(0, 30)),
+        ),
       );
       this.resetHistory();
       return;
@@ -48,7 +51,7 @@ export class History {
       const summary = await summarizeHistory(newHistory);
       this.history = {
         internal: [['', summary ?? ''], ...newHistory.internal.slice(-5)],
-        visible: [['', summary ?? ''], ...newHistory.visible.slice(-5)]
+        visible: [['', summary ?? ''], ...newHistory.visible.slice(-5)],
       };
       return;
     }

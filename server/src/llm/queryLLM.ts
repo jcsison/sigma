@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-import {
+import type {
   TextGenerationChatData,
   TextGenerationHistory,
-  TextGenerationUserData
-} from '../lib/types/chat.js';
-import { g } from '../lib/utils/helpers/index.js';
+  TextGenerationUserData,
+} from 'root/lib/types';
+import { g } from 'root/lib/helpers';
 
 interface QueryLLMParams {
   characterName?: string;
@@ -15,13 +15,9 @@ interface QueryLLMParams {
   userName?: string;
 }
 
-export const queryLLM = async ({
-  characterName,
-  history,
-  maxTokens,
-  prompt,
-  userName
-}: QueryLLMParams) => {
+export const queryLLM = async (
+  { characterName, history, maxTokens, prompt, userName }: QueryLLMParams,
+) => {
   const defaultCharacterName = g.validate(process.env.CHARACTER_NAME, g.string);
 
   if (!defaultCharacterName) {
@@ -30,7 +26,7 @@ export const queryLLM = async ({
 
   const textGenerationAPIHost = g.validate(
     process.env.TEXT_GENERATION_API_HOST,
-    g.string
+    g.string,
   );
 
   const defaultUserName = g.validate(process.env.USER_NAME, g.string);
@@ -49,12 +45,12 @@ export const queryLLM = async ({
     max_new_tokens: maxTokens ?? 75,
     mode: 'chat',
     user_input: prompt,
-    your_name: userName ?? defaultUserName
+    your_name: userName ?? defaultUserName,
   };
 
   const textGenerationResponse = await axios.post(
     `${textGenerationAPIHost}/v1/chat`,
-    textGenerationUserData
+    textGenerationUserData,
   );
 
   const chatData = g.validate<TextGenerationChatData>(
@@ -66,11 +62,11 @@ export const queryLLM = async ({
           'history',
           g.object(
             ['internal', g.array(g.array(g.string))],
-            ['visible', g.array(g.array(g.string))]
-          )
-        ])
-      )
-    ])
+            ['visible', g.array(g.array(g.string))],
+          ),
+        ]),
+      ),
+    ]),
   );
 
   if (!chatData) {

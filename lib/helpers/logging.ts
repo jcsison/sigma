@@ -1,11 +1,11 @@
 import pino from 'pino';
 import { serializeError } from 'serialize-error';
 
-import { DataError } from '../types/index.js';
-import { g } from './index.js';
+import type { DataError } from 'lib/types';
+import { g } from '.';
 
 const logger = pino({
-  base: undefined
+  base: undefined,
 });
 
 const error = (error: unknown, message?: string, ...params: unknown[]) => {
@@ -15,7 +15,7 @@ const error = (error: unknown, message?: string, ...params: unknown[]) => {
       message,
       error.message,
       error.data,
-      ...params
+      ...params,
     );
   } else if (g.object<Error>('name', 'message')(error)) {
     logger.error(error.message, message, ...params);

@@ -59,7 +59,7 @@ function promiseGuardF<T>(): Guard<Promise<T>> {
     objectGuardF(
       ['catch', functionGuardF],
       ['finally', functionGuardF],
-      ['then', functionGuardF]
+      ['then', functionGuardF],
     )(o);
 }
 
@@ -67,23 +67,23 @@ function propertiesGuardF<T extends { [Key in keyof T]: U }, U>(
   ...properties: Array<Property<T, U>>
 ): Guard<{ [Key in keyof T]: T[Key] }> {
   return (o: unknown): o is { [Key in keyof T]: T[Key] } =>
-    properties.every(property =>
+    properties.every((property) =>
       keyGuardF(property)
         ? propertyGuardF<T, U>(property)(o)
-        : propertyGuardF(property[0] as keyof T, property[1])(o)
+        : propertyGuardF(property[0] as keyof T, property[1])(o),
     );
 }
 
 function propertyGuardF<T extends { [Key in keyof T]: U }, U>(
   property: keyof T,
-  guard?: Guard<U>
+  guard?: Guard<U>,
 ): Guard<T> {
   return (o: unknown): o is T =>
     property in (o as T) && (guard ? guard((o as T)[property]) : true);
 }
 
 function recordGuardF<T extends string, U>(
-  guard: Guard<U>
+  guard: Guard<U>,
 ): Guard<Record<T, U>> {
   return (o: unknown): o is Record<T, U> =>
     objectGuardF()(o) && Object.values(o).every(guard);

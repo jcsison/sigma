@@ -1,1 +1,1 @@
-export * from './queryLLM.js';
+export * from './queryLLM';

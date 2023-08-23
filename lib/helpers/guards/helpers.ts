@@ -1,4 +1,4 @@
-import { Guard } from './guards.js';
+import type { Guard } from './guards';
 
 export type AnyToUnknown<T> = {
   [Key in keyof T]: T[Key] extends IsAny<T[Key]> ? unknown : T[Key];
@@ -22,14 +22,14 @@ type ParseJSONOptions =
 export const parseJSON = <T>(
   text: string | undefined,
   guard: Guard<T>,
-  options?: ParseJSONOptions
+  options?: ParseJSONOptions,
 ) => {
   try {
     if (!text) {
       return undefined;
     }
 
-    const result = JSON.parse(text);
+    const result = JSON.parse(text) as unknown;
 
     if (guard(result as T)) {
       return result as T;
