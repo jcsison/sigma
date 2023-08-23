@@ -1,22 +1,14 @@
-import { Request, Response } from 'express';
+import { TRPCError } from '@trpc/server';
 
 import { ChatData } from '../../lib/types/index.js';
-import { Log, g } from '../../lib/utils/helpers/index.js';
 import { textToSpeech } from '../../speech/index.js';
 
-export const speech = async (req: Request, res: Response) => {
-  const userInput = g.validate<ChatData>(
-    req.body,
-    g.object(['userInput', g.string])
-  )?.userInput;
-
+export const speech = async ({ userInput }: ChatData) => {
   if (!userInput) {
-    Log.error('Invalid user input');
-    res.sendStatus(500);
-    return;
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Invalid user input' });
   }
 
   await textToSpeech(userInput);
 
-  res.status(200).send(userInput);
+  return userInput;
 };

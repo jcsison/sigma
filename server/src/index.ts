@@ -1,5 +1,5 @@
 import './env.js';
-import { launchAPI } from './api/launchAPI.js';
+import { launchAPI } from './api/index.js';
 
 const start = () => {
   launchAPI();

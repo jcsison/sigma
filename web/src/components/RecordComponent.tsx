@@ -12,14 +12,14 @@ import {
   useRef,
   useState,
 } from "react";
-import { useMutation } from "react-query";
 
 import { Log } from "~/lib/utils/helpers";
 import { env } from "~/env.mjs";
+import { trpc } from "~/lib/api/trpc";
 import {
   type ChatData,
   type TextGenerationResponseData,
-} from "~/lib/types/sigmaAPI.js";
+} from "~/lib/types/sigmaAPI";
 
 const { SpeechRecognition: AzureSpeechRecognition } =
   createSpeechServicesPolyfill({
@@ -42,10 +42,10 @@ const updateHistory = (
   return [...prevHistory, [...(newHistory[newHistory.length - 1] ?? [])]];
 };
 
-const sendPrompt = async (prompt: string) => {
+const sendPrompt = async ({ userInput }: ChatData) => {
   const data = await axios.post<TextGenerationResponseData>(
     env.NEXT_PUBLIC_SERVER_API_URL + "/chat",
-    { userInput: prompt },
+    { userInput },
     {
       headers: { "Content-Type": "application/json" },
     }
@@ -73,7 +73,7 @@ export const RecordComponent = () => {
     isError: sendPromptError,
     isLoading: sendPromptLoading,
     mutate: sendPromptMutate,
-  } = useMutation({
+  } = trpc.chat.useMutation({
     mutationFn: sendPrompt,
     onSuccess: async (data) => {
       setSpeechInput(undefined);
@@ -127,7 +127,7 @@ export const RecordComponent = () => {
 
   const handleSendTextInput = () => {
     if (textInput) {
-      sendPromptMutate(textInput);
+      sendPromptMutate({ userInput: textInput });
       setSpeechInput(textInput);
       setTextInput("");
     }
@@ -146,7 +146,7 @@ export const RecordComponent = () => {
   useEffect(() => {
     if (finalTranscript !== "" && !sendPromptLoading) {
       stopListening();
-      sendPromptMutate(finalTranscript);
+      sendPromptMutate({ userInput: finalTranscript });
       setSpeechInput(finalTranscript);
       resetTranscript();
       SpeechRecognition.stopListening().catch(Log.error);
