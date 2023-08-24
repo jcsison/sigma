@@ -1,13 +1,9 @@
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from 'react-speech-recognition';
+import SpeechRecognition from 'react-speech-recognition';
 import axios from 'axios';
-import createSpeechServicesPolyfill from 'web-speech-cognitive-services';
 import {
   Fragment,
   type ChangeEvent,
   type KeyboardEvent,
-  useCallback,
   useEffect,
   useRef,
   useState,
@@ -17,16 +13,7 @@ import type { ChatData, TextGenerationResponseData } from '@root/lib/types';
 import { Log } from '@root/lib/helpers';
 import { env } from '~/env.mjs';
 import { trpc } from '~/lib/api/trpc';
-
-const { SpeechRecognition: AzureSpeechRecognition } =
-  createSpeechServicesPolyfill({
-    credentials: {
-      region: env.NEXT_PUBLIC_AZURE_SPEECH_REGION,
-      subscriptionKey: env.NEXT_PUBLIC_AZURE_SPEECH_KEY,
-    },
-  });
-
-SpeechRecognition.applyPolyfill(AzureSpeechRecognition);
+import { useListen } from '~/hooks/useListen';
 
 const updateHistory = (
   prevHistory: string[][] | undefined,
@@ -51,18 +38,21 @@ const sendPrompt = async ({ userInput }: ChatData) => {
 };
 
 export const RecordComponent = () => {
-  const {
-    browserSupportsSpeechRecognition,
-    finalTranscript,
-    isMicrophoneAvailable,
-    resetTranscript,
-    transcript,
-  } = useSpeechRecognition();
-
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const {
+    activeListen,
+    finalTranscript,
+    isListenAvailable,
+    resetTranscript,
+    startActiveListen,
+    startListening,
+    stopActiveListen,
+    stopListening,
+    transcript,
+  } = useListen();
+
   const [history, setHistory] = useState<string[][]>();
-  const [activeListen, setActiveListen] = useState(false);
   const [speechInput, setSpeechInput] = useState<string>();
   const [textInput, setTextInput] = useState('');
 
@@ -93,29 +83,6 @@ export const RecordComponent = () => {
     }
   };
 
-  const startListening = (start?: boolean) => {
-    if (start ?? activeListen) {
-      SpeechRecognition.startListening({
-        language: 'en-US',
-      }).catch(Log.error);
-    }
-  };
-
-  const stopListening = useCallback(() => {
-    SpeechRecognition.abortListening().catch(Log.error);
-    resetTranscript();
-  }, [resetTranscript]);
-
-  const startActiveListen = () => {
-    setActiveListen(true);
-    startListening(true);
-  };
-
-  const stopActiveListen = () => {
-    setActiveListen(false);
-    stopListening();
-  };
-
   const handleTextInput = (e: ChangeEvent<HTMLInputElement>) => {
     setTextInput(e.target.value);
   };
@@ -134,16 +101,19 @@ export const RecordComponent = () => {
     }
   };
 
+  // Scroll chat window to the bottom on every message
   useEffect(() => {
     scrollToEnd();
   }, [history, speechInput]);
 
+  // Log transcripts to console
   useEffect(() => {
     if (transcript) {
       Log.info(transcript);
     }
   }, [transcript]);
 
+  // Send prompt to API once done listening
   useEffect(() => {
     if (finalTranscript !== '' && !sendPromptLoading) {
       stopListening();
@@ -160,7 +130,7 @@ export const RecordComponent = () => {
     stopListening,
   ]);
 
-  if (!browserSupportsSpeechRecognition || !isMicrophoneAvailable) {
+  if (!isListenAvailable) {
     return null;
   }
 
