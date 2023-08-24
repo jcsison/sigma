@@ -2,11 +2,11 @@ import cors from 'cors';
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { z } from 'zod';
 
-import { Log, g } from 'root/lib/helpers';
-import { chat, empty, speech } from './resource/index.js';
-import { publicProcedure, router } from './trpc.js';
+import { Log, g } from '@root/lib/helpers';
+import { chat, empty, speech } from './resource';
+import { publicProcedure, router } from './trpc';
 
-const port = g.validate(process.env.PORT, g.number) ?? 3000;
+const port = g.validate(Number(process.env.PORT), g.number) ?? 3000;
 
 const appRouter = router({
   empty: publicProcedure.query(() => empty()),

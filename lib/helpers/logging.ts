@@ -1,11 +1,12 @@
 import pino from 'pino';
 import { serializeError } from 'serialize-error';
 
-import type { DataError } from 'lib/types';
+import { DataError } from '../types';
 import { g } from '.';
 
 const logger = pino({
   base: undefined,
+  browser: { serialize: true },
 });
 
 const error = (error: unknown, message?: string, ...params: unknown[]) => {
@@ -27,19 +28,19 @@ const error = (error: unknown, message?: string, ...params: unknown[]) => {
 };
 
 const info = (info: unknown, message?: string, ...params: unknown[]) => {
-  if (g.string(info)) {
-    logger.info(info, message, ...params);
+  const formattedInfo = g.string(info) ? info : JSON.stringify(info);
+
+  if (message) {
+    logger.info(formattedInfo, message, ...params);
   } else {
-    logger.info(JSON.stringify(info), message, ...params);
+    logger.info(formattedInfo, ...params);
   }
 };
 
 const warn = (warn: unknown, message?: string, ...params: unknown[]) => {
-  if (g.string(warn)) {
-    logger.warn(warn, message, ...params);
-  } else {
-    logger.warn(JSON.stringify(warn), message, ...params);
-  }
+  const formattedWarn = g.string(warn) ? warn : JSON.stringify(warn);
+
+  logger.warn(formattedWarn, message, ...params);
 };
 
 export const Log = { error, info, warn };

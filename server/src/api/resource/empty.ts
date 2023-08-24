@@ -1,4 +1,4 @@
-import { Log } from 'root/lib/helpers';
+import { Log } from '@root/lib/helpers';
 
 export const empty = () => {
   Log.info('Received ping');

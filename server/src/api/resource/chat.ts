@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server';
 
-import type { ChatData, TextGenerationResponseData } from 'root/lib/types';
+import type { ChatData, TextGenerationResponseData } from '@root/lib/types';
 import { History } from '~/history';
-import { Log } from 'root/lib/helpers';
+import { Log } from '@root/lib/helpers';
 import { queryLLM } from '~/llm';
 
 const history = new History();

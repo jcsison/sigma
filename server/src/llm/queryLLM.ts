@@ -4,8 +4,8 @@ import type {
   TextGenerationChatData,
   TextGenerationHistory,
   TextGenerationUserData,
-} from 'root/lib/types';
-import { g } from 'root/lib/helpers';
+} from '@root/lib/types';
+import { g } from '@root/lib/helpers';
 
 interface QueryLLMParams {
   characterName?: string;
@@ -15,9 +15,13 @@ interface QueryLLMParams {
   userName?: string;
 }
 
-export const queryLLM = async (
-  { characterName, history, maxTokens, prompt, userName }: QueryLLMParams,
-) => {
+export const queryLLM = async ({
+  characterName,
+  history,
+  maxTokens,
+  prompt,
+  userName,
+}: QueryLLMParams) => {
   const defaultCharacterName = g.validate(process.env.CHARACTER_NAME, g.string);
 
   if (!defaultCharacterName) {

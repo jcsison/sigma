@@ -1,5 +1,5 @@
-import type { TextGenerationHistory } from 'root/lib/types';
-import { Log } from 'root/lib/helpers';
+import type { TextGenerationHistory } from '@root/lib/types';
+import { Log } from '@root/lib/helpers';
 import { queryLLM } from '../llm';
 
 export const summarizeHistory = async (history: TextGenerationHistory) => {

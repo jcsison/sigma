@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "checkJs": true,
     "esModuleInterop": true,
@@ -10,14 +11,18 @@
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
+    "moduleDetection": "force",
     "moduleResolution": "node",
     "noEmit": true,
     "noUncheckedIndexedAccess": true,
+    "outDir": "dist",
     "resolveJsonModule": true,
+    "rootDir": ".",
     "skipLibCheck": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "verbatimModuleSyntax": true
   },
   "include": ["**/*.cjs", "**/*.mjs", "**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "lib/external"]
 }

@@ -1,4 +1,4 @@
-declare module "web-speech-cognitive-services" {
+declare module 'web-speech-cognitive-services' {
   interface Credentials {
     region: string;
     subscriptionKey: string;
@@ -8,10 +8,9 @@ declare module "web-speech-cognitive-services" {
     credentials: Credentials;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type SpeechRecognition = { SpeechRecognition: unknown };
 
   export default function createSpeechServicesPolyfill(
-    speechServicesPolyfillProps: SpeechServicesPolyfillProps
+    speechServicesPolyfillProps: SpeechServicesPolyfillProps,
   ): SpeechRecognition;
 }

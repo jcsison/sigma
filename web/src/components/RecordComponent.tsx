@@ -1,8 +1,8 @@
 import SpeechRecognition, {
   useSpeechRecognition,
-} from "react-speech-recognition";
-import axios from "axios";
-import createSpeechServicesPolyfill from "web-speech-cognitive-services";
+} from 'react-speech-recognition';
+import axios from 'axios';
+import createSpeechServicesPolyfill from 'web-speech-cognitive-services';
 import {
   Fragment,
   type ChangeEvent,
@@ -11,15 +11,12 @@ import {
   useEffect,
   useRef,
   useState,
-} from "react";
+} from 'react';
 
-import { Log } from "~/lib/utils/helpers";
-import { env } from "~/env.mjs";
-import { trpc } from "~/lib/api/trpc";
-import {
-  type ChatData,
-  type TextGenerationResponseData,
-} from "~/lib/types/sigmaAPI";
+import type { ChatData, TextGenerationResponseData } from '@root/lib/types';
+import { Log } from '@root/lib/helpers';
+import { env } from '~/env.mjs';
+import { trpc } from '~/lib/api/trpc';
 
 const { SpeechRecognition: AzureSpeechRecognition } =
   createSpeechServicesPolyfill({
@@ -33,7 +30,7 @@ SpeechRecognition.applyPolyfill(AzureSpeechRecognition);
 
 const updateHistory = (
   prevHistory: string[][] | undefined,
-  newHistory: string[][]
+  newHistory: string[][],
 ) => {
   if (!prevHistory) {
     return [newHistory[newHistory.length - 1] ?? []];
@@ -44,11 +41,11 @@ const updateHistory = (
 
 const sendPrompt = async ({ userInput }: ChatData) => {
   const data = await axios.post<TextGenerationResponseData>(
-    env.NEXT_PUBLIC_SERVER_API_URL + "/chat",
+    env.NEXT_PUBLIC_SERVER_API_URL + '/chat',
     { userInput },
     {
-      headers: { "Content-Type": "application/json" },
-    }
+      headers: { 'Content-Type': 'application/json' },
+    },
   );
   return data.data;
 };
@@ -67,7 +64,7 @@ export const RecordComponent = () => {
   const [history, setHistory] = useState<string[][]>();
   const [activeListen, setActiveListen] = useState(false);
   const [speechInput, setSpeechInput] = useState<string>();
-  const [textInput, setTextInput] = useState("");
+  const [textInput, setTextInput] = useState('');
 
   const {
     isError: sendPromptError,
@@ -86,8 +83,6 @@ export const RecordComponent = () => {
     },
   });
 
-  Log.info(transcript);
-
   const resetHistory = () => {
     setHistory(undefined);
   };
@@ -101,7 +96,7 @@ export const RecordComponent = () => {
   const startListening = (start?: boolean) => {
     if (start ?? activeListen) {
       SpeechRecognition.startListening({
-        language: "en-US",
+        language: 'en-US',
       }).catch(Log.error);
     }
   };
@@ -129,12 +124,12 @@ export const RecordComponent = () => {
     if (textInput) {
       sendPromptMutate({ userInput: textInput });
       setSpeechInput(textInput);
-      setTextInput("");
+      setTextInput('');
     }
   };
 
   const handleTextInputEnter = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSendTextInput();
     }
   };
@@ -144,7 +139,13 @@ export const RecordComponent = () => {
   }, [history, speechInput]);
 
   useEffect(() => {
-    if (finalTranscript !== "" && !sendPromptLoading) {
+    if (transcript) {
+      Log.info(transcript);
+    }
+  }, [transcript]);
+
+  useEffect(() => {
+    if (finalTranscript !== '' && !sendPromptLoading) {
       stopListening();
       sendPromptMutate({ userInput: finalTranscript });
       setSpeechInput(finalTranscript);
@@ -209,7 +210,7 @@ export const RecordComponent = () => {
               <div className="flex w-full justify-end">
                 <div className="mb-4 inline-block max-w-sm rounded-xl bg-sky-800/60 px-2 pb-2 pt-1 shadow-sm">
                   <p className="text-1xl inline-block py-1 font-semibold text-white">
-                    {sendPromptError ? "Error sending message!" : "..."}
+                    {sendPromptError ? 'Error sending message!' : '...'}
                   </p>
                 </div>
               </div>
@@ -221,8 +222,8 @@ export const RecordComponent = () => {
           <button
             className={`flex max-w-xs flex-col gap-4 rounded-xl px-4 pb-2 pt-1 text-white shadow-lg ${
               activeListen
-                ? "bg-pink-600/80 hover:bg-pink-600/40"
-                : "bg-white/10 hover:bg-white/20"
+                ? 'bg-pink-600/80 hover:bg-pink-600/40'
+                : 'bg-white/10 hover:bg-white/20'
             }`}
             onClick={startActiveListen}
           >
@@ -232,8 +233,8 @@ export const RecordComponent = () => {
           <button
             className={`flex max-w-xs flex-col gap-4 rounded-xl px-4 pb-2 pt-1 text-white shadow-lg ${
               !activeListen
-                ? "bg-pink-600/80 hover:bg-pink-600/40"
-                : "bg-white/10 hover:bg-white/20"
+                ? 'bg-pink-600/80 hover:bg-pink-600/40'
+                : 'bg-white/10 hover:bg-white/20'
             }`}
             onClick={stopActiveListen}
           >

@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server';
 
-import type { ChatData } from 'root/lib/types';
+import type { ChatData } from '@root/lib/types';
 import { textToSpeech } from '~/speech';
 
 export const speech = async ({ userInput }: ChatData) => {

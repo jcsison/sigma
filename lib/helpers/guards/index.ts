@@ -10,12 +10,12 @@ import {
   promiseGuard,
   propertiesGuard,
   recordGuard,
-  stringGuard
+  stringGuard,
 } from './guards';
-import { validateData } from './helpers';
+import { validateData } from './helper';
 
 export * from './guards';
-export * from './helpers';
+export * from './helper';
 
 export const g = {
   array: arrayGuard,
@@ -30,5 +30,5 @@ export const g = {
   properties: propertiesGuard,
   record: recordGuard,
   string: stringGuard,
-  validate: validateData
+  validate: validateData,
 } as const;

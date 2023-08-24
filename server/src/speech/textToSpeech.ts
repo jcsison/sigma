@@ -1,7 +1,7 @@
 import player from 'play-sound';
 import sdk from 'microsoft-cognitiveservices-speech-sdk';
 
-import { g } from 'root/lib/helpers';
+import { g } from '@root/lib/helpers';
 import { xmlToString } from './helper';
 
 const audioPlayer = player({ player: 'mplayer' });

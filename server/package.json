@@ -1,15 +1,13 @@
 {
   "name": "sigma-server",
-  "main": "index.js",
-  "type": "module",
   "scripts": {
-    "dev": "node --experimental-modules --loader ts-node/esm --max_old_space_size=460 --no-warnings --optimize_for_size --watch src/index.ts | pino-pretty",
+    "dev": "tsx watch ./src/index.ts | pino-pretty",
     "build": "rimraf ./dist && tsc -p .",
     "build:watch": "tsc -w -p .",
     "clean": "rimraf ./dist",
     "init": "npm install && npm run-script build",
     "postinstall": "patch-package",
-    "start": "node --experimental-modules --experimental-specifier-resolution=node --max_old_space_size=460 --no-warnings --optimize_for_size dist/src/index.js | pino-pretty",
+    "start": "tsx ./src/index.ts",
     "whisper-fetch-model": "npx whisper-node download base.en"
   },
   "dependencies": {
@@ -17,14 +15,14 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "play-sound": "^1.1.5",
-    "serialize-error": "^11.0.0",
-    "ts-node": "^10.9.1"
+    "serialize-error": "^11.0.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/play-sound": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^6.2.1"
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "tsx": "^3.12.7"
   },
   "husky": {
     "hooks": {

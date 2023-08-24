@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 export const env = createEnv({
   /**
@@ -7,7 +7,8 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    NODE_ENV: z.enum(["development", "test", "production"]),
+    NODE_ENV: z.enum(['development', 'test', 'production']),
+    NEXT_TELEMETRY_DISABLED: z.literal('1'),
   },
 
   /**
@@ -27,6 +28,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_TELEMETRY_DISABLED: process.env.NEXT_TELEMETRY_DISABLED,
     NEXT_PUBLIC_AZURE_SPEECH_KEY: process.env.NEXT_PUBLIC_AZURE_SPEECH_KEY,
     NEXT_PUBLIC_AZURE_SPEECH_REGION:
       process.env.NEXT_PUBLIC_AZURE_SPEECH_REGION,

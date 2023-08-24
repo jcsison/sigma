@@ -1,9 +1,9 @@
-import Head from "next/head";
-import dynamic from "next/dynamic.js";
+import Head from 'next/head';
+import dynamic from 'next/dynamic.js';
 
 const DynamicRecordComponentWithNoSSR = dynamic(
-  () => import("~/components/RecordComponent"),
-  { ssr: false }
+  () => import('~/components/RecordComponent'),
+  { ssr: false },
 );
 
 export default function Home() {
