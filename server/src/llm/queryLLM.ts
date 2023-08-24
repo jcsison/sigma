@@ -5,6 +5,7 @@ import type {
   TextGenerationHistory,
   TextGenerationUserData,
 } from '@root/lib/types';
+import { env } from '~/env.mjs';
 import { g } from '@root/lib/helpers';
 
 interface QueryLLMParams {
@@ -22,26 +23,10 @@ export const queryLLM = async ({
   prompt,
   userName,
 }: QueryLLMParams) => {
-  const defaultCharacterName = g.validate(process.env.CHARACTER_NAME, g.string);
+  const textGenerationAPIHost = env.TEXT_GENERATION_API_HOST;
 
-  if (!defaultCharacterName) {
-    throw new Error('Missing character name');
-  }
-
-  const textGenerationAPIHost = g.validate(
-    process.env.TEXT_GENERATION_API_HOST,
-    g.string,
-  );
-
-  const defaultUserName = g.validate(process.env.USER_NAME, g.string);
-
-  if (!defaultUserName) {
-    throw new Error('Missing user name');
-  }
-
-  if (!textGenerationAPIHost) {
-    throw new Error('Missing `text-generation-webui` API Host');
-  }
+  const defaultCharacterName = env.CHARACTER_NAME;
+  const defaultUserName = env.USER_NAME;
 
   const textGenerationUserData: TextGenerationUserData = {
     character: characterName ?? defaultCharacterName,

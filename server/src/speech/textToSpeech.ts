@@ -1,7 +1,7 @@
 import player from 'play-sound';
 import sdk from 'microsoft-cognitiveservices-speech-sdk';
 
-import { g } from '@root/lib/helpers';
+import { env } from '~/env.mjs';
 import { xmlToString } from './helper';
 
 const audioPlayer = player({ player: 'mplayer' });
@@ -9,8 +9,8 @@ const audioPlayer = player({ player: 'mplayer' });
 const speechPath = 'src/speech/';
 
 export const textToSpeech = async (text: string) => {
-  const speechKey = g.validate(process.env.AZURE_SPEECH_KEY, g.string);
-  const speechRegion = g.validate(process.env.AZURE_SPEECH_REGION, g.string);
+  const speechKey = env.AZURE_SPEECH_KEY;
+  const speechRegion = env.AZURE_SPEECH_REGION;
 
   if (!speechKey || !speechRegion) {
     throw new Error('Invalid speech config');
