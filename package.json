@@ -4,6 +4,10 @@
   "author": "jcsison",
   "description": "",
   "license": "ISC",
+  "engines": {
+    "npm": "use-bun",
+    "yarn": "use-bun"
+  },
   "dependencies": {
     "@t3-oss/env-nextjs": "^0.3.1",
     "axios": "^1.4.0",

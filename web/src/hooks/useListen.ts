@@ -4,8 +4,8 @@ import SpeechRecognition, {
 import createSpeechServicesPolyfill from 'web-speech-cognitive-services';
 import { useCallback, useState } from 'react';
 
-import { env } from '~/env.mjs';
 import { Log } from '@root/lib/helpers';
+import { env } from '~/env.mjs';
 
 const { SpeechRecognition: AzureSpeechRecognition } =
   createSpeechServicesPolyfill({

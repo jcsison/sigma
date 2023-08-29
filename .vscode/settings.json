@@ -3,9 +3,7 @@
   "editor.formatOnSave": false,
   "editor.tabSize": 2,
   "editor.wordWrapColumn": 80,
-  "eslint.workingDirectories": [
-    "./server"
-  ],
+  "eslint.workingDirectories": ["./server"],
   "files.insertFinalNewline": true,
   "javascript.preferences.quoteStyle": "single",
   "prettier.arrowParens": "avoid",

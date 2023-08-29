@@ -10,8 +10,8 @@ while true; do
   echo -n "User Prompt: "
   read user_input
 
-  # curl -X POST ${API_HOST_URL}/speech \
-  curl -X POST ${API_HOST_URL}/chat \
+  # curl -X POST ${API_HOST_URL}/chat \
+  curl -X POST ${API_HOST_URL}/speech \
     -H "Content-Type: application/json" \
     -d '{"userInput": "'"${user_input}"'"}' |
     sed 's/['\'']/_/g' |

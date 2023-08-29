@@ -1,5 +1,5 @@
 import player from 'play-sound';
-import sdk from 'microsoft-cognitiveservices-speech-sdk';
+import * as sdk from 'microsoft-cognitiveservices-speech-sdk';
 
 import { env } from '~/env.mjs';
 import { xmlToString } from './helper';

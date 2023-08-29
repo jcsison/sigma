@@ -1,5 +1,4 @@
 import SpeechRecognition from 'react-speech-recognition';
-import axios from 'axios';
 import {
   Fragment,
   type ChangeEvent,
@@ -9,9 +8,7 @@ import {
   useState,
 } from 'react';
 
-import type { ChatData, TextGenerationResponseData } from '@root/lib/types';
 import { Log } from '@root/lib/helpers';
-import { env } from '~/env.mjs';
 import { trpc } from '~/lib/api/trpc';
 import { useListen } from '~/hooks/useListen';
 
@@ -24,17 +21,6 @@ const updateHistory = (
   }
 
   return [...prevHistory, [...(newHistory[newHistory.length - 1] ?? [])]];
-};
-
-const sendPrompt = async ({ userInput }: ChatData) => {
-  const data = await axios.post<TextGenerationResponseData>(
-    env.NEXT_PUBLIC_SERVER_API_URL + '/chat',
-    { userInput },
-    {
-      headers: { 'Content-Type': 'application/json' },
-    },
-  );
-  return data.data;
 };
 
 export const RecordComponent = () => {
@@ -56,20 +42,22 @@ export const RecordComponent = () => {
   const [speechInput, setSpeechInput] = useState<string>();
   const [textInput, setTextInput] = useState('');
 
+  const { mutate: sendSpeechMutate } = trpc.speech.useMutation({
+    onSuccess: async () => {
+      startListening();
+    },
+  });
+
   const {
     isError: sendPromptError,
     isLoading: sendPromptLoading,
     mutate: sendPromptMutate,
   } = trpc.chat.useMutation({
-    mutationFn: sendPrompt,
     onSuccess: async (data) => {
       setSpeechInput(undefined);
       setHistory((prev) => updateHistory(prev, data.history));
-      // await axios.post<ChatData>(env.NEXT_PUBLIC_SERVER_API_URL + "/speech", {
-      //   userInput: data.response,
-      // });
-      await Promise.resolve<ChatData>({ userInput: data.response });
-      startListening();
+      sendSpeechMutate({ userInput: data.response });
+      // await Promise.resolve<ChatData>({ userInput: data.response });
     },
   });
 

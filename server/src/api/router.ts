@@ -16,7 +16,7 @@ const appRouter = router({
     .mutation(({ input }) => chat(input)),
   speech: publicProcedure
     .input(z.object({ userInput: z.string() }))
-    .query(({ input }) => speech(input)),
+    .mutation(({ input }) => speech(input)),
 });
 
 export type AppRouter = typeof appRouter;
