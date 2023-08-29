@@ -44,18 +44,16 @@ export const queryLLM = async ({
 
   const chatData = g.validate<TextGenerationChatData>(
     textGenerationResponse.data,
-    g.object([
-      'results',
-      g.array(
-        g.object([
-          'history',
-          g.object(
-            ['internal', g.array(g.array(g.string))],
-            ['visible', g.array(g.array(g.string))],
-          ),
-        ]),
+    g.object({
+      results: g.array(
+        g.object({
+          history: g.object({
+            internal: g.array(g.array(g.string())),
+            visible: g.array(g.array(g.string())),
+          }),
+        }),
       ),
-    ]),
+    }),
   );
 
   if (!chatData) {

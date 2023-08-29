@@ -7,7 +7,7 @@ import { chat, empty, speech } from './resource';
 import { env } from '~/env.mjs';
 import { publicProcedure, router } from './trpc';
 
-const port = g.validate(Number(env.PORT), g.number) ?? 3000;
+const port = g.validate(Number(env.PORT), g.number()) ?? 3000;
 
 const appRouter = router({
   empty: publicProcedure.query(() => empty()),

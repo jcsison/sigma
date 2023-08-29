@@ -7,9 +7,19 @@ export class DataError extends Error {
   }
 }
 
+export type AnyToUnknown<T> = {
+  [Key in keyof T]: T[Key] extends IsAny<T[Key]> ? unknown : T[Key];
+};
+
 export type EnumType<T> = ObjectValues<T>;
 
 export type GuardType<T> = (o: unknown) => o is T;
+
+export type IsAny<T> = unknown extends T
+  ? [keyof T] extends [never]
+    ? never
+    : T
+  : never;
 
 export type Maybe<T> = T | undefined | null;
 

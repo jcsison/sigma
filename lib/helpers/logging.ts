@@ -10,7 +10,13 @@ const logger = pino({
 });
 
 const error = (error: unknown, message?: string, ...params: unknown[]) => {
-  if (g.object<DataError>('name', 'message', 'data')(error)) {
+  if (
+    g.object<DataError>({
+      data: g.unknown(),
+      message: g.string(),
+      name: g.string(),
+    })(error)
+  ) {
     logger.error(
       JSON.stringify(serializeError(error)),
       message,
@@ -18,9 +24,11 @@ const error = (error: unknown, message?: string, ...params: unknown[]) => {
       error.data,
       ...params,
     );
-  } else if (g.object<Error>('name', 'message')(error)) {
+  } else if (
+    g.object<Error>({ message: g.string(), name: g.string() })(error)
+  ) {
     logger.error(error.message, message, ...params);
-  } else if (g.string(error)) {
+  } else if (g.string()(error)) {
     logger.error(error, message, ...params);
   } else {
     logger.error(JSON.stringify(serializeError(error)), message, ...params);
@@ -28,7 +36,7 @@ const error = (error: unknown, message?: string, ...params: unknown[]) => {
 };
 
 const info = (info: unknown, message?: string, ...params: unknown[]) => {
-  const formattedInfo = g.string(info) ? info : JSON.stringify(info);
+  const formattedInfo = g.string()(info) ? info : JSON.stringify(info);
 
   if (message) {
     logger.info(formattedInfo, message, ...params);
@@ -38,7 +46,7 @@ const info = (info: unknown, message?: string, ...params: unknown[]) => {
 };
 
 const warn = (warn: unknown, message?: string, ...params: unknown[]) => {
-  const formattedWarn = g.string(warn) ? warn : JSON.stringify(warn);
+  const formattedWarn = g.string()(warn) ? warn : JSON.stringify(warn);
 
   logger.warn(formattedWarn, message, ...params);
 };

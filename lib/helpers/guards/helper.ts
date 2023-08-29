@@ -1,13 +1,4 @@
-import type { Guard } from './guards';
-
-export type AnyToUnknown<T> = {
-  [Key in keyof T]: T[Key] extends IsAny<T[Key]> ? unknown : T[Key];
-};
-export type IsAny<T> = unknown extends T
-  ? [keyof T] extends [never]
-    ? never
-    : T
-  : never;
+import type { Guard } from './types';
 
 type ParseJSONOptions =
   | {
