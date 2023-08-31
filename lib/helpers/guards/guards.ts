@@ -4,14 +4,6 @@
 import type { Guard } from './types';
 import { validateData } from './helper';
 
-type Property<T extends { [Key in keyof T]: U }, U = unknown> =
-  | keyof T
-  | readonly [keyof T, Guard<T[keyof T]>]
-  | readonly [string, Guard<U>];
-export type Properties<T extends { [Key in keyof T]: U }, U = unknown> =
-  | readonly [Property<T, U>, ...Array<Property<T, U>>]
-  | readonly [];
-
 function anyGuard(): Guard<any> {
   return (o: unknown): o is any => true;
 }
@@ -29,7 +21,7 @@ function enumGuard<T>(en: Record<string, T>): Guard<T> {
   return (o: unknown): o is T => Object.values(en).includes(o as T);
 }
 
-function functionGuard<T extends Function = Function>(): Guard<T> {
+function functionGuard<T extends Function>(): Guard<T> {
   return (o: unknown): o is T => {
     return typeof o === 'function';
   };
@@ -52,10 +44,11 @@ function numberGuard(): Guard<number> {
 }
 
 function objectGuard<T>(properties?: {
-  [x in keyof T]: Guard<T[x]>;
+  [Key in keyof T]: Guard<T[Key]>;
 }): Guard<T> {
   if (!properties) {
-    return (o: unknown): o is T => typeof o === 'object' && !Array.isArray(o);
+    return (o: unknown): o is T =>
+      typeof o === 'object' && !Array.isArray(o) && !!o;
   }
 
   return (o: unknown): o is T =>
@@ -75,10 +68,10 @@ function promiseGuard<T>(): Guard<Promise<T>> {
 }
 
 function propertiesGuard<T>(properties: {
-  [x in keyof T]: Guard<T[x]>;
-}): Guard<{ [Key in keyof T]: T[Key] }> {
+  [Key in keyof T]: Guard<T[Key]>;
+}): Guard<T> {
   const propertiesArray = Object.entries(properties) as [keyof T, T[keyof T]][];
-  return (o: unknown): o is { [Key in keyof T]: T[Key] } =>
+  return (o: unknown): o is T =>
     propertiesArray.every((property) => {
       if (!functionGuard<Guard<T>>()(property[1])) {
         return false;
@@ -88,9 +81,9 @@ function propertiesGuard<T>(properties: {
     });
 }
 
-function propertyGuard<T extends { [Key in keyof T]: U }, U>(
+function propertyGuard<T extends { [Key in keyof T]: T[Key] }>(
   property: keyof T,
-  guard?: Guard<U>,
+  guard?: T[keyof T] & Guard<T>,
 ): Guard<T> {
   return (o: unknown): o is T =>
     property in (o as T) && (guard ? guard((o as T)[property]) : true);
@@ -100,7 +93,7 @@ function recordGuard<T extends string, U>(
   guard: Guard<U>,
 ): Guard<Record<T, U>> {
   return (o: unknown): o is Record<T, U> =>
-    objectGuard<T>()(o) && Object.values(o).every(guard);
+    objectGuard<Record<T, U>>()(o) && Object.values(o).every(guard);
 }
 
 function stringGuard(): Guard<string> {
