@@ -46,7 +46,6 @@ fi
 
 # Run server
 conda run -n textgen --no-capture-output python server.py \
-  --chat \
   --character ${CHARACTER} \
   --model ${MODEL} \
   --loader ${LOADER} \

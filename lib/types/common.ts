@@ -13,8 +13,6 @@ export type AnyToUnknown<T> = {
 
 export type EnumType<T> = ObjectValues<T>;
 
-export type GuardType<T> = (o: unknown) => o is T;
-
 export type IsAny<T> = unknown extends T
   ? [keyof T] extends [never]
     ? never

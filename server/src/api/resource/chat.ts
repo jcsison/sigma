@@ -36,7 +36,7 @@ export const chat = async ({ userInput }: ChatData) => {
   history.updateHistory(chatHistory).catch(Log.error);
 
   const textGenerationResponseData: TextGenerationResponseData = {
-    history: chatHistory.visible,
+    history: chatHistory.internal,
     response: chatOutput,
   };
 

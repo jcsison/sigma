@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "composite": true,
+    "emitDeclarationOnly": true,
     "outDir": "dist",
     "noEmit": false,
     "paths": {
