@@ -1,15 +1,13 @@
-import { TRPCError } from '@trpc/server';
-
-import type { ChatData, TextGenerationResponseData } from '@root/lib/types';
+import { Log } from ':root/lib/helpers';
+import type { ChatData, TextGenerationResponseData } from ':root/lib/types';
 import { History } from '~/history';
-import { Log } from '@root/lib/helpers';
 import { queryLLM } from '~/llm';
 
 const history = new History();
 
 export const chat = async ({ userInput }: ChatData) => {
   if (!userInput) {
-    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Invalid user input' });
+    throw new Error('Invalid user input');
   }
 
   Log.info(`User input: ${userInput}`);
@@ -25,10 +23,7 @@ export const chat = async ({ userInput }: ChatData) => {
   });
 
   if (!chatHistory || !chatOutput) {
-    throw new TRPCError({
-      code: 'INTERNAL_SERVER_ERROR',
-      message: 'Error fetching response from LLM',
-    });
+    throw new Error('Error fetching response from LLM');
   }
 
   Log.info(`Bot output: ${chatOutput}`);

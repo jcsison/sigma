@@ -1,15 +1,14 @@
-import SpeechRecognition from 'react-speech-recognition';
 import {
-  Fragment,
   type ChangeEvent,
+  Fragment,
   type KeyboardEvent,
   useEffect,
   useRef,
   useState,
 } from 'react';
+import SpeechRecognition from 'react-speech-recognition';
 
-import { Log } from '@root/lib/helpers';
-import { trpc } from '~/lib/api/trpc';
+import { Log } from ':root/lib/helpers';
 import { useListen } from '~/hooks/useListen';
 
 const updateHistory = (
@@ -42,24 +41,24 @@ export const RecordComponent = () => {
   const [speechInput, setSpeechInput] = useState<string>();
   const [textInput, setTextInput] = useState('');
 
-  const { mutate: sendSpeechMutate } = trpc.speech.useMutation({
-    onSuccess: async () => {
-      startListening();
-    },
-  });
+  // const { mutate: sendSpeechMutate } = trpc.speech.useMutation({
+  //   onSuccess: async () => {
+  //     startListening();
+  //   },
+  // });
 
-  const {
-    isError: sendPromptError,
-    isLoading: sendPromptLoading,
-    mutate: sendPromptMutate,
-  } = trpc.chat.useMutation({
-    onSuccess: async (data) => {
-      setSpeechInput(undefined);
-      setHistory((prev) => updateHistory(prev, data.history));
-      sendSpeechMutate({ userInput: data.response });
-      // await Promise.resolve<ChatData>({ userInput: data.response });
-    },
-  });
+  // const {
+  //   isError: sendPromptError,
+  //   isLoading: sendPromptLoading,
+  //   mutate: sendPromptMutate,
+  // } = trpc.chat.useMutation({
+  //   onSuccess: async (data) => {
+  //     setSpeechInput(undefined);
+  //     setHistory((prev) => updateHistory(prev, data.history));
+  //     sendSpeechMutate({ userInput: data.response });
+  //     // await Promise.resolve<ChatData>({ userInput: data.response });
+  //   },
+  // });
 
   const resetHistory = () => {
     setHistory(undefined);
@@ -77,7 +76,7 @@ export const RecordComponent = () => {
 
   const handleSendTextInput = () => {
     if (textInput) {
-      sendPromptMutate({ userInput: textInput });
+      // sendPromptMutate({ userInput: textInput });
       setSpeechInput(textInput);
       setTextInput('');
     }
@@ -103,9 +102,10 @@ export const RecordComponent = () => {
 
   // Send prompt to API once done listening
   useEffect(() => {
-    if (finalTranscript !== '' && !sendPromptLoading) {
+    if (finalTranscript !== '') {
+      // && !sendPromptLoading) {
       stopListening();
-      sendPromptMutate({ userInput: finalTranscript });
+      // sendPromptMutate({ userInput: finalTranscript });
       setSpeechInput(finalTranscript);
       resetTranscript();
       SpeechRecognition.stopListening().catch(Log.error);
@@ -113,8 +113,8 @@ export const RecordComponent = () => {
   }, [
     finalTranscript,
     resetTranscript,
-    sendPromptLoading,
-    sendPromptMutate,
+    // sendPromptLoading,
+    // sendPromptMutate,
     stopListening,
   ]);
 
@@ -168,7 +168,7 @@ export const RecordComponent = () => {
               <div className="flex w-full justify-end">
                 <div className="mb-4 inline-block max-w-sm rounded-xl bg-sky-800/60 px-2 pb-2 pt-1 shadow-sm">
                   <p className="text-1xl inline-block py-1 font-semibold text-white">
-                    {sendPromptError ? 'Error sending message!' : '...'}
+                    {/*sendPromptError ? 'Error sending message!' : '...'*/}
                   </p>
                 </div>
               </div>

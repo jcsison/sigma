@@ -1,7 +1,7 @@
 import pino from 'pino';
 import { serializeError } from 'serialize-error';
 
-import { DataError } from '../types';
+import type { DataError } from '../types';
 import { g } from '.';
 
 const logger = pino({

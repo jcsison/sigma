@@ -1,5 +1,6 @@
-import type { TextGenerationHistory } from '@root/lib/types';
-import { Log } from '@root/lib/helpers';
+import { Log } from ':root/lib/helpers';
+import type { TextGenerationHistory } from ':root/lib/types';
+
 import { summarizeHistory } from './summarizeHistory';
 
 export class History {
@@ -20,8 +21,7 @@ export class History {
 
   updateHistory = async (newHistory: TextGenerationHistory) => {
     if (
-      this.history &&
-      this.history.internal
+      this.history?.internal
         .map((messages) => messages[1]?.slice(0, 30))
         .includes(
           newHistory.internal[newHistory.internal.length - 1]?.[1]?.slice(

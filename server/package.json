@@ -6,13 +6,15 @@
     "build:watch": "tsc -w -p .",
     "clean": "rimraf ./dist",
     "init": "bun install && npm run-script build",
+    "lint": "ci/lint.sh",
     "postinstall": "patch-package",
     "start": "tsx ./src/index.ts",
     "whisper-fetch-model": "bun x whisper-node download base.en"
   },
   "dependencies": {
-    "@trpc/server": "^10.37.1",
-    "cors": "^2.8.5",
+    "@elysiajs/cors": "^0.6.0",
+    "@elysiajs/eden": "^0.6.5",
+    "@elysiajs/swagger": "^0.6.2",
     "dotenv": "^16.3.1",
     "play-sound": "^1.1.5",
     "serialize-error": "^11.0.0"
@@ -21,7 +23,6 @@
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/play-sound": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^6.2.1",
     "tsx": "^3.12.8"
   },
   "husky": {
@@ -31,7 +32,9 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint src/**/*.{ts,tsx}"
+      "prettier -c",
+      "eslint",
+      "sh -c tsc"
     ]
   }
 }

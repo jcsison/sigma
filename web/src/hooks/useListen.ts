@@ -1,10 +1,10 @@
+import { useCallback, useState } from 'react';
 import SpeechRecognition, {
   useSpeechRecognition,
 } from 'react-speech-recognition';
 import createSpeechServicesPolyfill from 'web-speech-cognitive-services';
-import { useCallback, useState } from 'react';
 
-import { Log } from '@root/lib/helpers';
+import { Log } from ':root/lib/helpers';
 import { env } from '~/env.mjs';
 
 const { SpeechRecognition: AzureSpeechRecognition } =

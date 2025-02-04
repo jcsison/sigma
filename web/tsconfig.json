@@ -3,8 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@root/*": ["../*"],
-      "@server/*": ["../server/src/*"],
+      ":root/*": ["../*"],
+      ":server/*": ["../server/src/*"],
       "~/*": ["./src/*"]
     }
   },
@@ -13,6 +13,7 @@
     "**/*.mjs",
     "**/*.ts",
     "**/*.tsx",
+    "../.eslintrc.js",
     "../lib/**/*.ts",
     "../server/src/**/*"
   ],

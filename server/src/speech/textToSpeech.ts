@@ -1,7 +1,8 @@
-import player from 'play-sound';
 import * as sdk from 'microsoft-cognitiveservices-speech-sdk';
+import player from 'play-sound';
 
 import { env } from '~/env.mjs';
+
 import { xmlToString } from './helper';
 
 const audioPlayer = player({ player: 'mplayer' });

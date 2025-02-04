@@ -1,33 +1,29 @@
-import cors from 'cors';
-import { createHTTPServer } from '@trpc/server/adapters/standalone';
-import { z } from 'zod';
+import cors from '@elysiajs/cors';
+import swagger from '@elysiajs/swagger';
+import Elysia, { t } from 'elysia';
 
-import { Log, g } from '@root/lib/helpers';
-import { chat, empty, speech } from './resource';
+import { g, Log } from ':root/lib/helpers';
 import { env } from '~/env.mjs';
-import { publicProcedure, router } from './trpc';
+
+import { chat, empty, speech } from './resource';
 
 const port = g.validate(Number(env.PORT), g.number()) ?? 3000;
 
-const appRouter = router({
-  empty: publicProcedure.query(() => empty()),
-  chat: publicProcedure
-    .input(z.object({ userInput: z.string() }))
-    .mutation(({ input }) => chat(input)),
-  speech: publicProcedure
-    .input(z.object({ userInput: z.string() }))
-    .mutation(({ input }) => speech(input)),
-});
+const appRouter = new Elysia()
+  .use(cors())
+  .use(swagger())
+  .get('/', () => empty())
+  .post('/chat', ({ body }) => chat(body), {
+    body: t.Object({ userInput: t.String() }),
+  })
+  .post('/speech', ({ body }) => speech(body), {
+    body: t.Object({ userInput: t.String() }),
+  });
 
 export type AppRouter = typeof appRouter;
 
-const server = createHTTPServer({
-  middleware: cors(),
-  router: appRouter,
-});
-
 export const launchAPI = () => {
-  server.listen(port);
+  appRouter.listen(port);
 
   Log.info(`Listening on port ${port}`);
 };

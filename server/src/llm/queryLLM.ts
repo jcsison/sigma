@@ -1,12 +1,12 @@
 import axios from 'axios';
 
+import { g } from ':root/lib/helpers';
 import type {
   TextGenerationChatData,
   TextGenerationHistory,
   TextGenerationUserData,
-} from '@root/lib/types';
+} from ':root/lib/types';
 import { env } from '~/env.mjs';
-import { g } from '@root/lib/helpers';
 
 interface QueryLLMParams {
   characterName?: string;

@@ -23,6 +23,6 @@
     "types": ["bun-types"],
     "verbatimModuleSyntax": true
   },
-  "include": ["**/*.cjs", "**/*.mjs", "**/*.ts"],
+  "include": ["**/*.cjs", "**/*.js", "**/*.mjs", "**/*.ts"],
   "exclude": ["node_modules", "lib/external"]
 }
